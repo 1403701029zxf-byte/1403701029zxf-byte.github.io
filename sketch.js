@@ -3,6 +3,9 @@ let points = [];
 let t = 0;
 let maxParticles = 2500;
 
+let canvasWidth, canvasHeight;
+let scaleFactor; // 缩放因子
+
 function preload() {
   imgStart = loadImage('CSWADI.png');
   imgEnd = loadImage('horse.png');
@@ -10,15 +13,26 @@ function preload() {
 }
 
 function setup() {
-  let canvasWidth = min(windowWidth, imgStart.width);
-  let canvasHeight = canvasWidth * (imgStart.height / imgStart.width); // 横屏保持比例
+  // 固定横屏比例
+  let ratio = imgStart.width / imgStart.height; // 3:2
+  canvasWidth = windowWidth;
+  canvasHeight = canvasWidth / ratio;
+
+  // 如果高度超过屏幕高度，按高度缩放
+  if (canvasHeight > windowHeight) {
+    canvasHeight = windowHeight;
+    canvasWidth = canvasHeight * ratio;
+  }
+
   let canvas = createCanvas(canvasWidth, canvasHeight);
   canvas.parent('p5-canvas');
 
-  // 缩放图片到 canvas 尺寸
-  imgStart.resize(width, height);
-  imgEnd.resize(width, height);
-  transparent.resize(width, height);
+  // 缩放因子，用于鼠标位置等计算
+  scaleFactor = canvasWidth / imgStart.width;
+
+  imgStart.resize(canvasWidth, canvasHeight);
+  imgEnd.resize(canvasWidth, canvasHeight);
+  transparent.resize(canvasWidth, canvasHeight);
 
   background(20);
   noiseDetail(2, 2.5);
@@ -34,9 +48,8 @@ function setup() {
 }
 
 function draw() {
-  t = min(t + 0.004, 1); // 控制动画速度
+  t = min(t + 0.004, 1);
 
-  // 每帧生成少量新粒子
   if (points.length < maxParticles) {
     for (let i = 0; i < 15; i++) {
       let x = random(width);
@@ -47,7 +60,6 @@ function draw() {
     }
   }
 
-  // 更新粒子
   for (let i = points.length - 1; i >= 0; i--) {
     let p = points[i];
     p.show(t);
@@ -107,10 +119,18 @@ class Points {
 }
 
 function windowResized() {
-  let canvasWidth = min(windowWidth, imgStart.width);
-  let canvasHeight = canvasWidth * (imgStart.height / imgStart.width);
+  // 横屏比例不变，按屏幕宽度缩放
+  let ratio = imgStart.width / imgStart.height;
+  canvasWidth = windowWidth;
+  canvasHeight = canvasWidth / ratio;
+  if (canvasHeight > windowHeight) {
+    canvasHeight = windowHeight;
+    canvasWidth = canvasHeight * ratio;
+  }
+
   resizeCanvas(canvasWidth, canvasHeight);
-  imgStart.resize(width, height);
-  imgEnd.resize(width, height);
-  transparent.resize(width, height);
+
+  imgStart.resize(canvasWidth, canvasHeight);
+  imgEnd.resize(canvasWidth, canvasHeight);
+  transparent.resize(canvasWidth, canvasHeight);
 }
