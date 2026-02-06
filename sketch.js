@@ -1,10 +1,11 @@
 let imgStart, imgEnd, transparent;
 let points = [];
 let t = 0;
-let maxParticles = 2500;
+let maxParticles = 2000; // 手机优化粒子总数
 
 let canvasWidth, canvasHeight;
-let scaleFactor; // 缩放因子
+let targetWidth = 720;  // 自动缩放目标宽度
+let scaleRatio;
 
 function preload() {
   imgStart = loadImage('CSWADI.png');
@@ -13,23 +14,22 @@ function preload() {
 }
 
 function setup() {
-  // 固定横屏比例
-  let ratio = imgStart.width / imgStart.height; // 3:2
-  canvasWidth = windowWidth;
-  canvasHeight = canvasWidth / ratio;
+  // 图片按比例缩放到 targetWidth
+  scaleRatio = targetWidth / imgStart.width;
+  canvasWidth = imgStart.width * scaleRatio;
+  canvasHeight = imgStart.height * scaleRatio;
 
-  // 如果高度超过屏幕高度，按高度缩放
+  // 如果高度超过屏幕，按屏幕高度缩放
   if (canvasHeight > windowHeight) {
+    scaleRatio = windowHeight / imgStart.height;
     canvasHeight = windowHeight;
-    canvasWidth = canvasHeight * ratio;
+    canvasWidth = imgStart.width * scaleRatio;
   }
 
   let canvas = createCanvas(canvasWidth, canvasHeight);
   canvas.parent('p5-canvas');
 
-  // 缩放因子，用于鼠标位置等计算
-  scaleFactor = canvasWidth / imgStart.width;
-
+  // 缩放图片到 canvas 尺寸
   imgStart.resize(canvasWidth, canvasHeight);
   imgEnd.resize(canvasWidth, canvasHeight);
   transparent.resize(canvasWidth, canvasHeight);
@@ -37,7 +37,7 @@ function setup() {
   background(20);
   noiseDetail(2, 2.5);
 
-  // 初始化粒子
+  // 初始化粒子（少量，首屏显示）
   for (let i = 0; i < 1000; i++) {
     let x = random(width);
     let y = random(height);
@@ -50,6 +50,7 @@ function setup() {
 function draw() {
   t = min(t + 0.004, 1);
 
+  // 动态生成粒子，控制总量
   if (points.length < maxParticles) {
     for (let i = 0; i < 15; i++) {
       let x = random(width);
@@ -60,6 +61,7 @@ function draw() {
     }
   }
 
+  // 更新并绘制粒子
   for (let i = points.length - 1; i >= 0; i--) {
     let p = points[i];
     p.show(t);
@@ -86,6 +88,7 @@ function draw() {
   }
 }
 
+// ---------------------- Points 类 ----------------------
 class Points {
   constructor(x, y, cStart, cEnd) {
     this.pos = createVector(x, y);
@@ -118,14 +121,13 @@ class Points {
   }
 }
 
+// ---------------------- 手机旋转监听 ----------------------
 function windowResized() {
-  // 横屏比例不变，按屏幕宽度缩放
-  let ratio = imgStart.width / imgStart.height;
   canvasWidth = windowWidth;
-  canvasHeight = canvasWidth / ratio;
+  canvasHeight = canvasWidth / (imgStart.width / imgStart.height);
   if (canvasHeight > windowHeight) {
     canvasHeight = windowHeight;
-    canvasWidth = canvasHeight * ratio;
+    canvasWidth = canvasHeight * (imgStart.width / imgStart.height);
   }
 
   resizeCanvas(canvasWidth, canvasHeight);
