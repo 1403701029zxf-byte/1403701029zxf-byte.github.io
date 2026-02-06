@@ -2,18 +2,9 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <title>从城市到奔马</title>
+  <title>粒子变换动画贺卡</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- 移动端适配 -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
-  <!-- Open Graph（微信 / 分享用） -->
-  <meta property="og:title" content="从城市到奔马" />
-  <meta property="og:description" content="Generative transition · p5.js" />
-  <meta property="og:image" content="CSWADI.png" />
-  <meta property="og:type" content="website" />
-
-  <!-- p5.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 
   <style>
@@ -26,27 +17,37 @@
       min-height: 100vh;
       font-family: "Microsoft YaHei", sans-serif;
     }
+
     #container {
       text-align: center;
     }
+
     canvas {
       display: block;
       margin: 0 auto;
       border-radius: 12px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     }
+
     .message {
       margin-top: 20px;
       color: white;
-      font-size: 22px;
-      opacity: 0.9;
+      font-size: 24px;
+    }
+
+    .instructions {
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
     }
   </style>
 </head>
+
 <body>
   <div id="container">
     <div id="p5-canvas"></div>
     <div class="message">从城市到奔马，为你而变 🌟</div>
+    <div class="instructions">等待粒子完成变换</div>
   </div>
 
   <script src="sketch.js"></script>
